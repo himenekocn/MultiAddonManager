@@ -800,7 +800,7 @@ const char *MultiAddonManager::GetLicense()
 
 const char *MultiAddonManager::GetVersion()
 {
-	return MULTIADDONMANAGER_VERSION; // defined by the build script
+	return "hime dev"; // defined by the build script
 }
 
 const char *MultiAddonManager::GetDate()
