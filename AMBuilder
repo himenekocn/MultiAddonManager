@@ -16,8 +16,8 @@ for sdk_target in MMSPlugin.sdk_targets:
 
   binary = MMSPlugin.HL2Library(builder, cxx, MMSPlugin.plugin_name, sdk)
   
-  version = subprocess.check_output(['git', 'describe', '--tags', '--long']).decode('ascii').strip()
-  binary.compiler.defines += ['MULTIADDONMANAGER_VERSION="%s"'%(version)]
+  # version = subprocess.check_output(['git', 'describe', '--tags', '--long']).decode('ascii').strip()
+  # binary.compiler.defines += ['MULTIADDONMANAGER_VERSION="%s"'%(version)]
 
   target_folder = 'Debug' if builder.options.debug else 'Release'
 
