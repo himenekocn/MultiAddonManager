@@ -92,10 +92,10 @@ std::string VectorToString(CUtlVector<std::string> &vector)
 	return result;
 }
 
-typedef void (FASTCALL *SendNetMessage_t)(INetChannel *pNetChan, INetworkMessageInternal *pNetMessage, CNetMessage *pData, int a4);
+typedef void (FASTCALL *SendNetMessage_t)(INetChannel *pNetChan, CNetMessage *pData, int a4);
 typedef void* (FASTCALL *HostStateRequest_t)(void *a1, void **pRequest);
 
-void FASTCALL Hook_SendNetMessage(INetChannel *pNetChan, INetworkMessageInternal *pNetMessage, CNetMessage *pData, int a4);
+void FASTCALL Hook_SendNetMessage(INetChannel *pNetChan, CNetMessage *pData, int a4);
 void* FASTCALL Hook_HostStateRequest(void *a1, void **pRequest);
 
 SendNetMessage_t g_pfnSendNetMessage = nullptr;
@@ -659,13 +659,11 @@ void MultiAddonManager::Hook_StartupServer(const GameSessionConfiguration_t &con
 	RefreshAddons();
 }
 
-void FASTCALL Hook_SendNetMessage(INetChannel *pNetChan, INetworkMessageInternal *pNetMessage, CNetMessage *pData, int a4)
+void FASTCALL Hook_SendNetMessage(INetChannel *pNetChan, CNetMessage *pData, int a4)
 {
-	NetMessageInfo_t *info = pNetMessage->GetNetMessageInfo();
-
 	// 7 for signon messages
-	if (info->m_MessageId != 7 || g_MultiAddonManager.m_ExtraAddons.Count() == 0 || !CommandLine()->HasParm("-dedicated"))
-		return g_pfnSendNetMessage(pNetChan, pNetMessage, pData, a4);
+	if (g_MultiAddonManager.m_ExtraAddons.Count() == 0 || !CommandLine()->HasParm("-dedicated"))
+		return g_pfnSendNetMessage(pNetChan, pData, a4);
 
 	auto pMsg = pData->ToPB<CNETMsg_SignonState>();
 
@@ -692,7 +690,7 @@ void FASTCALL Hook_SendNetMessage(INetChannel *pNetChan, INetworkMessageInternal
 		pPendingClient->signon_timestamp = Plat_FloatTime();
 	}
 
-	g_pfnSendNetMessage(pNetChan, pNetMessage, pData, a4);
+	g_pfnSendNetMessage(pNetChan, pData, a4);
 }
 
 void* FASTCALL Hook_HostStateRequest(void *a1, void **pRequest)
