@@ -661,8 +661,10 @@ void MultiAddonManager::Hook_StartupServer(const GameSessionConfiguration_t &con
 
 void FASTCALL Hook_SendNetMessage(INetChannel *pNetChan, CNetMessage *pData, int a4)
 {
+	NetMessageInfo_t *info = pData->GetNetMessage()->GetNetMessageInfo();
+
 	// 7 for signon messages
-	if (g_MultiAddonManager.m_ExtraAddons.Count() == 0 || !CommandLine()->HasParm("-dedicated"))
+	if (info->m_MessageId != 7 || g_MultiAddonManager.m_ExtraAddons.Count() == 0 || !CommandLine()->HasParm("-dedicated"))
 		return g_pfnSendNetMessage(pNetChan, pData, a4);
 
 	auto pMsg = pData->ToPB<CNETMsg_SignonState>();
